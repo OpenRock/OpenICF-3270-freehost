@@ -22,6 +22,7 @@
  */
 package org.identityconnectors.rw3270.freehost3270;
 
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.AssertJUnit;
@@ -76,6 +77,9 @@ public class FH3270ConnectionTests {
     public static void before() {
         PropertyBag testProps = TestHelpers.getProperties(FH3270Connection.class);
         HOST_NAME         = testProps.getStringProperty("HOST_NAME");
+        if ("__configureme__".equals(HOST_NAME)) {
+            throw new SkipException("REST Sample tests are skipped. Create private configuration!");
+        }
         SYSTEM_PASSWORD   = testProps.getStringProperty("SYSTEM_PASSWORD");
         SYSTEM_USER       = testProps.getStringProperty("SYSTEM_USER");
         System.out.println("HOST NAME="+HOST_NAME);
@@ -133,7 +137,7 @@ public class FH3270ConnectionTests {
                 } else {
                     MapTransform transform = fillInPatternNodes(omvsParser);
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> attributes = (Map<String, Object>)transform.transform(line);
+                    Map<String, Object> attributes = transform.transform(line);
                     AssertJUnit.assertNotNull(attributes.get("TSO.MAXSIZE"));
                     AssertJUnit.assertNotNull(attributes.get("TSO.USERDATA"));
                     AssertJUnit.assertNotNull(attributes.get("TSO.JOBCLASS"));
@@ -184,7 +188,7 @@ public class FH3270ConnectionTests {
                 String line = executeCommand(connection, command);
                 MapTransform transform = fillInPatternNodes(cicsParser);
                 @SuppressWarnings("unchecked")
-                Map<String, Object> attributes = (Map<String, Object>)transform.transform(line);
+                Map<String, Object> attributes = transform.transform(line);
                 AssertJUnit.assertNotNull(attributes.get("CICS.XRFSOFF"));
                 AssertJUnit.assertTrue(attributes.get("CICS.OPCLASS") instanceof List);
             } finally {
@@ -243,7 +247,7 @@ public class FH3270ConnectionTests {
                 System.out.println(line);
                 MapTransform transform = fillInPatternNodes(racfParser);
                 @SuppressWarnings("unchecked")
-                Map<String, Object> attributes = (Map<String, Object>)transform.transform(line);
+                Map<String, Object> attributes = transform.transform(line);
                 System.out.println(attributes);
             } finally {
                 connection.dispose();
@@ -282,7 +286,7 @@ public class FH3270ConnectionTests {
                 String line = executeCommand(connection, command);
                 MapTransform transform = fillInPatternNodes(tsoParser);
                 @SuppressWarnings("unchecked")
-                Map<String, Object> attributes = (Map<String, Object>)transform.transform(line);
+                Map<String, Object> attributes = transform.transform(line);
                 AssertJUnit.assertNotNull(attributes.get("TSO.MAXSIZE"));
                 AssertJUnit.assertNotNull(attributes.get("TSO.USERDATA"));
                 AssertJUnit.assertNotNull(attributes.get("TSO.JOBCLASS"));
